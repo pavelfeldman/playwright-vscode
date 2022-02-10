@@ -89,7 +89,7 @@ export class PlaywrightTest {
     const allArgs = [config.cli, 'list-files', '-c', configFile];
     {
       // For tests.
-      this._log(`${path.relative(config.workspaceFolder, configFolder)}> playwright list-files -c ${configFile}`);
+      this._log(`${escapeRegex(path.relative(config.workspaceFolder, configFolder))}> playwright list-files -c ${configFile}`);
     }
     const output = await this._runNode(allArgs, configFolder);
     try {
@@ -125,7 +125,7 @@ export class PlaywrightTest {
     {
       // For tests.
       const relativeLocations = locations.map(f => path.relative(configFolder, f));
-      this._log(`${path.relative(config.workspaceFolder, configFolder)}> playwright test -c ${configFile}${args.length ? ' ' + args.join(' ') : ''}${relativeLocations.length ? ' ' + relativeLocations.join(' ') : ''}`);
+      this._log(`${escapeRegex(path.relative(config.workspaceFolder, configFolder))}> playwright test -c ${configFile}${args.length ? ' ' + args.join(' ') : ''}${relativeLocations.length ? ' ' + relativeLocations.join(' ') : ''}`);
     }
     const allArgs = [config.cli, 'test',
       '-c', configFile,
