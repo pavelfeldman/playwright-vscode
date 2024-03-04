@@ -166,7 +166,7 @@ export class PlaywrightTest {
     try {
       if (token?.isCancellationRequested)
         return;
-      await this._test(config, locationArg, 'run', options, listener, token);
+      await this._test(config, locationArg, 'test', options, listener, token);
     } finally {
       await this._runHooks.onDidRunTests(false);
     }
@@ -190,14 +190,14 @@ export class PlaywrightTest {
     return this._settingsModel.useTestServer.get();
   }
 
-  private async _test(config: TestConfig, locations: string[], mode: 'list' | 'run', options: PlaywrightTestOptions, listener: TestListener, token: vscodeTypes.CancellationToken): Promise<void> {
+  private async _test(config: TestConfig, locations: string[], mode: 'list' | 'test', options: PlaywrightTestOptions, listener: TestListener, token: vscodeTypes.CancellationToken): Promise<void> {
     if (this._useTestServer(config))
       await this._testWithServer(config, locations, mode, options, listener, token);
     else
       await this._testWithCLI(config, locations, mode, options, listener, token);
   }
 
-  private async _testWithCLI(config: TestConfig, locations: string[], mode: 'list' | 'run', options: PlaywrightTestOptions, listener: TestListener, token: vscodeTypes.CancellationToken): Promise<void> {
+  private async _testWithCLI(config: TestConfig, locations: string[], mode: 'list' | 'test', options: PlaywrightTestOptions, listener: TestListener, token: vscodeTypes.CancellationToken): Promise<void> {
     // Playwright will restart itself as child process in the ESM mode and won't inherit the 3/4 pipes.
     // Always use ws transport to mitigate it.
     const reporterServer = new ReporterServer(this._vscode);
@@ -262,17 +262,20 @@ export class PlaywrightTest {
     await reporterServer.wireTestListener(listener, token);
   }
 
-  private async _testWithServer(config: TestConfig, locations: string[], mode: 'list' | 'run', options: PlaywrightTestOptions, listener: TestListener, token: vscodeTypes.CancellationToken): Promise<void> {
+  private async _testWithServer(config: TestConfig, locations: string[], mode: 'list' | 'test', options: PlaywrightTestOptions, listener: TestListener, token: vscodeTypes.CancellationToken): Promise<void> {
     const testServer = await this._testServerController.testServerFor(config);
     if (token?.isCancellationRequested)
       return;
     if (!testServer)
       return;
-    const reporter = require.resolve('./oopReporter');
+    const reporters = [
+      { file: require.resolve('./oopReporter'), event: 'report' },
+      { file: require.resolve('./teleReporter'), event: 'tele' },
+    ];
     if (mode === 'list')
-      testServer.listTests({ configFile: config.configFile, locations, reporter });
-    if (mode === 'run') {
-      testServer.test({ configFile: config.configFile, locations, reporter, ...options });
+      testServer.listTests({ configFile: config.configFile, locations, reporters });
+    if (mode === 'test') {
+      testServer.test({ configFile: config.configFile, locations, reporters, ...options });
       token.onCancellationRequested(() => {
         testServer.stop({ configFile: config.configFile });
       });

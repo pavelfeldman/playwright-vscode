@@ -103,6 +103,7 @@ class TestServer extends BackendClient implements TestServerInterface, TestServe
         f();
       }, token);
       this.on('report', reportHandler);
+      this.on('tele', e => console.log('tele', e));
     });
   }
 }

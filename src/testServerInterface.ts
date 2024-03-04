@@ -30,16 +30,17 @@ export interface TestServerInterface {
     error?: TestError;
   }>;
 
+
   listTests(params: {
     configFile: string;
     locations: string[];
-    reporter: string;
+    reporters: { file: string, event: string }[];
   }): Promise<void>;
 
   test(params: {
     configFile: string;
     locations: string[];
-    reporter: string;
+    reporters: { file: string, event: string }[];
     headed?: boolean;
     oneWorker?: boolean;
     trace?: 'on' | 'off';
@@ -62,5 +63,6 @@ export interface TestServerInterface {
 }
 
 export interface TestServerEvents {
+  on(event: 'report', listener: (params: any) => void): void;
   on(event: 'stdio', listener: (params: { type: 'stdout' | 'stderr', text?: string, buffer?: string }) => void): void;
 }

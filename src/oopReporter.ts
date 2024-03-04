@@ -65,15 +65,15 @@ class OopReporter implements Reporter {
   private _transport: Promise<ConnectionTransport>;
   private _hasSender: boolean;
 
-  constructor(sender: (message: any) => void) {
-    this._hasSender = !!sender;
-    if (sender) {
+  constructor(options: any) {
+    this._hasSender = !!options?.send;
+    if (this._hasSender) {
       this._transport = Promise.resolve({
-        send: message => sender(message),
+        send: message => options.send(message),
         close: () => {},
         isClosed: () => false,
       });
-    } else {
+    } else if (process.env.PW_TEST_REPORTER_WS_ENDPOINT) {
       this._transport = WebSocketTransport.connect(process.env.PW_TEST_REPORTER_WS_ENDPOINT!);
       this._transport.then(t => {
         t.onmessage = message => {
@@ -81,6 +81,14 @@ class OopReporter implements Reporter {
             process.emit('SIGINT' as any);
         };
         t.onclose = () => process.exit(0);
+      });
+    } else {
+      this._transport = Promise.resolve({
+        send: message => {
+          console.log(message);
+        },
+        isClosed: () => false,
+        close: () => {},
       });
     }
   }
