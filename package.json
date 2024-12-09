@@ -126,6 +126,21 @@
         }
       }
     },
+    "languageModelTools": [
+      {
+        "name": "pw_pageContent",
+        "tags": [
+          "editors"
+        ],
+        "userDescription": "Page content",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "pageContent",
+        "displayName": "Page Content",
+        "modelDescription": "Page content",
+        "icon": "$(files)",
+        "inputSchema": {}
+      }
+    ],
     "views": {
       "test": [
         {
@@ -158,7 +173,7 @@
     "@types/glob": "^8.0.0",
     "@types/node": "^18.11.9",
     "@types/stack-utils": "^2.0.1",
-    "@types/vscode": "1.86.0",
+    "@types/vscode": "1.95.0",
     "@types/which": "^3.0.3",
     "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^7.3.1",

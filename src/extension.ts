@@ -30,6 +30,7 @@ import { WorkspaceChange, WorkspaceObserver } from './workspaceObserver';
 import { registerTerminalLinkProvider } from './terminalLinkProvider';
 import { RunHooks, TestConfig } from './playwrightTestTypes';
 import { ansi2html } from './ansi2html';
+import { registerChatTools } from './chat';
 
 const stackUtils = new StackUtils({
   cwd: '/ensure_absolute_paths'
@@ -240,6 +241,7 @@ export class Extension implements RunHooks {
       this._diagnostics,
       this._treeItemObserver,
       registerTerminalLinkProvider(this._vscode),
+      registerChatTools(this._vscode),
     ];
     const fileSystemWatchers = [
       // Glob parser does not supported nested group, hence multiple watchers.
